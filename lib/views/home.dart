@@ -1,5 +1,3 @@
-// home.dart
-
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -52,25 +50,67 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _saveData() {
-    _databaseRef.child('example').set({'data': _controller.text});
-    _controller.clear();
+  void _saveData() async {
+    try {
+      // Generate a unique key for each new entry
+      String? newKey = _databaseRef.child('example').push().key;
+
+      // Use the unique key to add data under that key
+      await _databaseRef
+          .child('example')
+          .child(newKey!)
+          .set({'data': _controller.text});
+      _controller.clear();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data saved successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving data: $e')),
+      );
+    }
   }
 
-  void _retrieveData() {
-    _databaseRef.child('example').once().then((DatabaseEvent event) {
+  void _retrieveData() async {
+    try {
+      DatabaseEvent event = await _databaseRef.child('example').once();
       print('Data retrieved: ${event.snapshot.value}');
-    });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data retrieved: ${event.snapshot.value}')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error retrieving data: $e')),
+      );
+    }
   }
 
-  void _updateData() {
-    _databaseRef
-        .child('example')
-        .update({'data': 'Updated ${_controller.text}'});
-    _controller.clear();
+  void _updateData() async {
+    try {
+      await _databaseRef
+          .child('example')
+          .update({'data': 'Updated ${_controller.text}'});
+      _controller.clear();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data updated successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating data: $e')),
+      );
+    }
   }
 
-  void _deleteData() {
-    _databaseRef.child('example').remove();
+  void _deleteData() async {
+    try {
+      await _databaseRef.child('example').remove();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data deleted successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting data: $e')),
+      );
+    }
   }
 }
