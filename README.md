@@ -1,6 +1,6 @@
 # flutter_firebase
 
-A new Flutter project.
+A Flutter project based on CRUD operations using Firebase.
 
 ## Getting Started
 
